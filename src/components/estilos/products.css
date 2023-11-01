@@ -1,0 +1,30 @@
+.products-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.product-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    align-items: center;
+}
+
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.product-details h2 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.product-details p {
+    font-size: 1rem;
+    color: #333;
+}

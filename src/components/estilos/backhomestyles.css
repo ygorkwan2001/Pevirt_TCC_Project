@@ -1,0 +1,14 @@
+.back-to-homepage {
+    background-color: #3498db; /* Cor de fundo do botão */
+    border: none;              /* Removendo a borda padrão */
+    color: white;              /* Cor do texto */
+    padding: 10px 20px;        /* Espaçamento interno */
+    border-radius: 5px;       /* Bordas arredondadas */
+    font-size: 16px;          /* Tamanho da fonte */
+    cursor: pointer;          /* Estilo do cursor */
+    transition: 0.3s;         /* Efeito de transição */
+}
+
+.back-to-homepage:hover {
+    background-color: #2980b9; /* Cor de fundo do botão ao passar o mouse */
+}

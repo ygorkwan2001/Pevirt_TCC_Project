@@ -1,0 +1,78 @@
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+/* Estilos para os formulários */
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input[type="text"], textarea, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+textarea {
+    height: 60px;
+    resize: vertical; /* permite o usuário redimensionar verticalmente se necessário */
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo específico para a área de Cadastrar Produto */
+.prod-fields {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Permite que os itens quebrem em várias linhas se necessário */
+}
+
+.prod-fields > div {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.prod-fields > div:last-child {
+    margin-right: 0; /* Remove a margem do último item para evitar espaço extra */
+}
+
+.prod-checkboxes {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.prod-checkboxes > label {
+    margin-right: 20px;
+}

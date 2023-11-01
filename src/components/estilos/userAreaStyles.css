@@ -1,0 +1,44 @@
+.user-area-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #f7f9fc;
+}
+
+.card {
+    width: 80%;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.user-info {
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 10px;
+    font-size: 1.4rem;
+    color: #007BFF;
+}

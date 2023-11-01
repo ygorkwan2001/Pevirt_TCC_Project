@@ -1,0 +1,117 @@
+.user-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    background-image: url('/public//images/imagem\ de\ fundo\ cadastro.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.user-form-container {
+    width: 450px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.user-logo {
+    width: 80px;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.user-form-title {
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #333;
+}
+
+.user-form-group {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.user-form-group>.form-label {
+    display: block;
+    /* para garantir que o label ocupe toda a linha */
+    margin-bottom: 8px;
+    /* para dar um espaçamento entre o label e o input */
+}
+
+.user-form-group>Form.Control {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.user-form-group>Form.Control:focus {
+    border-color: #1877f2;
+    outline: none;
+    box-shadow: none;
+}
+
+.user-button {
+    width: 100%;
+    background-color: #3498db;
+    /* gradiente de cor */
+    border: none;
+    /* remover borda */
+    border-radius: 30px;
+    /* bordas arredondadas */
+    margin-bottom: 10px;
+    color: #f7f4f4;
+    /* cor do texto branco */
+    font-size: 16px;
+    /* tamanho da fonte ajustado */
+    padding: 12px 20px;
+    /* padding ajustado */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    /* sombra suave */
+    transition: transform 0.3s, box-shadow 0.3s;
+    /* transição suave */
+}
+
+.user-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.form-control {
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #1877f2;
+    outline: none;
+    box-shadow: none;
+}
+
+.password-input {
+    width: 100%;
+    height: 45px; 
+    box-sizing: border-box;
+    padding: 10px 15px; 
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
