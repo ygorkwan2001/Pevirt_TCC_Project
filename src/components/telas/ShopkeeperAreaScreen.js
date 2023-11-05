@@ -22,6 +22,14 @@ const ShopkeeperAreaScreen = () => {
     const [editedUser, setEditedUser] = useState({ ...user });
 
 
+    const maskPhone = (value) => {
+        return value
+            .replace(/\D/g, "")
+            .replace(/^(\d{2})(\d)/g, "($1) $2")
+            .replace(/(\d)(\d{4})$/, "$1-$2");
+    }
+
+
     if (!user) {
         Swal.fire({
             title: 'Erro',
@@ -87,7 +95,7 @@ const ShopkeeperAreaScreen = () => {
                         }).then(() => {
                             // Limpar os dados do usuário do armazenamento local
                             localStorage.removeItem('user');  // Supondo que você esteja usando localStorage
-    
+
                             // Redirecionar para a página inicial
                             navigate('/homepage');
                         });
@@ -119,8 +127,15 @@ const ShopkeeperAreaScreen = () => {
                 </div>
                 <UserInfo icon={FaUser} label="Nome" data={isEditing ? <input value={editedUser.nome} onChange={e => setEditedUser({ ...editedUser, nome: e.target.value })} /> : currentUser.nome} />
                 <UserInfo icon={FaEnvelope} label="Email" data={isEditing ? <input value={editedUser.email} onChange={e => setEditedUser({ ...editedUser, email: e.target.value })} /> : currentUser.email} />
-                <UserInfo icon={FaStore} label="Loja" data={isEditing ? <input value={editedUser.loja} onChange={e => setEditedUser({ ...editedUser, loja: e.target.value })} /> : currentUser.loja} />
-                <UserInfo icon={FaPhone} label="Telefone" data={isEditing ? <input value={editedUser.telefone} onChange={e => setEditedUser({ ...editedUser, telefone: e.target.value })} /> : currentUser.telefone} />
+                <UserInfo
+                    icon={FaPhone}
+                    label="Telefone"
+                    data={isEditing ?
+                        <input value={maskPhone(editedUser.telefone)} onChange={e => setEditedUser({ ...editedUser, telefone: e.target.value })} />
+                        :
+                        maskPhone(currentUser.telefone)}
+                />
+
                 <UserInfo icon={FaUserTag} label="Tipo" data={isEditing ? <input value={editedUser.tipo} onChange={e => setEditedUser({ ...editedUser, tipo: e.target.value })} /> : currentUser.tipo} />
             </div>
         </div>

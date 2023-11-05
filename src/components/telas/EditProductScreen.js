@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../NavBar';
 import { useRef } from 'react';
+import Swal from 'sweetalert2';
 
 
 
@@ -19,6 +20,17 @@ const EditProductScreen = () => {
         ativo: true,
         storeId: ''
     });
+
+    const maskPrice = (value) => {
+        let v = value.replace(/\D/g,''); 
+        v = (v / 100).toFixed(2) + ''; 
+        v = v.replace(".", ",");
+        return v;
+    }
+    
+    
+    
+
 
     // Função para buscar o produto quando a página for carregada
     useEffect(() => {
@@ -43,18 +55,25 @@ const EditProductScreen = () => {
         e.preventDefault();
         try {
             await axios.put(`http://localhost:5000/products/${id}`, product);
-            alert("Produto atualizado com sucesso!");
-            navigate('/admin'); // redirecionar para a página de administração após atualização
+            Swal.fire(
+                'Sucesso!',
+                'Produto atualizado com sucesso!',
+                'success'
+            ).then(() => navigate('/admin')); // redirecionar para a página de administração após atualização
         } catch (error) {
             console.error("Erro ao atualizar produto:", error);
+            Swal.fire(
+                'Erro!',
+                'Não foi possível atualizar o produto. Por favor, tente novamente.',
+                'error'
+            );
         }
     };
-
     const convertToBase64 = file => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-    
+
             reader.onload = () => resolve(reader.result);
             reader.onerror = error => reject(error);
         });
@@ -63,11 +82,11 @@ const EditProductScreen = () => {
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
         const base64Image = await convertToBase64(file);
-    
+
         setProduct(prevState => ({ ...prevState, imagem: base64Image }));
     };
-    
-    
+
+
 
     return (
         <div className="edit-product-container">
@@ -79,42 +98,45 @@ const EditProductScreen = () => {
             <form onSubmit={handleProductSubmit}>
                 <label>
                     Nome do Produto
-                <input
-                    type="text"
-                    name="nome"
-                    value={product.nome}
-                    onChange={handleProductChange}
-                    placeholder="Nome do Produto"
-                />
+                    <input
+                        type="text"
+                        name="nome"
+                        value={product.nome}
+                        onChange={handleProductChange}
+                        placeholder="Nome do Produto"
+                    />
                 </label>
                 <label>
                     Descrição
-                <input
-                    type="text"
-                    name="descricao"
-                    value={product.descricao}
-                    onChange={handleProductChange}
-                    placeholder="Descrição"
-                />
+                    <input
+                        type="text"
+                        name="descricao"
+                        value={product.descricao}
+                        onChange={handleProductChange}
+                        placeholder="Descrição"
+                    />
                 </label>
                 <label>
                     Preço
-                <input
-                    type="number"
-                    name="preco"
-                    value={product.preco}
-                    onChange={handleProductChange}
-                    placeholder="Preço"
-                />
+                    <input
+                        type="text"
+                        name="preco"
+                        placeholder="Preço"
+                        value={product.preco}
+                        onChange={e => {
+                            const maskedValue = maskPrice(e.target.value);
+                            handleProductChange({ target: { name: "preco", value: maskedValue } });
+                        }}
+                    />
                 </label>
                 <label>
                     Imagem do Produto
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    ref={inputFileRef}
-                />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        ref={inputFileRef}
+                    />
                 </label>
                 <label>
                     Promocional:

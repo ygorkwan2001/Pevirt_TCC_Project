@@ -5,7 +5,7 @@ import axios from 'axios';
 import '../estilos/adminscreen.css';
 import '../estilos/storecreated.css';
 import { getData } from '../config/storage'
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 
 const AdminScreen = () => {
     const navigate = useNavigate();
@@ -16,6 +16,18 @@ const AdminScreen = () => {
     const [store, setStore] = useState(initialStore);
     const initialProduct = { nome: '', descricao: '', preco: '', imagem: '', promocional: false, ativo: true, storeId: '' };
     const [product, setProduct] = useState(initialProduct);
+    const [produtosPromocionais, setProdutosPromocionais] = useState([]);
+
+
+    const maskPrice = (value) => {
+        let v = value.replace(/\D/g,''); 
+        v = (v / 100).toFixed(2) + ''; 
+        v = v.replace(".", ",");
+        return v;
+    }
+    
+    
+
 
 
     const inputFileRef = useRef();
@@ -37,28 +49,50 @@ const AdminScreen = () => {
         setProduct(prevState => ({ ...prevState, imagem: base64Image }));
     };
 
+    const fetchLojasEProdutos = async () => {
+        const loggedInUser = getData('user');
+        if (!loggedInUser || loggedInUser.tipo !== 'Lojista') {
+            swal.fire({
+                title: "Acesso Negado!",
+                text: "Desculpe, você não tem acesso ao painel administrativo.",
+                icon: "error",
+            }).then(() => {
+                navigate('/homepage');
+            });
+            return;
+        }
+    
+        try {
+            // Fetching the stores associated with the logged in user
+            const lojasResponse = await axios.get(`http://localhost:5000/stores?userId=${loggedInUser.id}`);
+            setLojas(lojasResponse.data);
+    
+            // Fetching all the products
+            const produtosResponse = await axios.get('http://localhost:5000/products');
+            const allProdutos = produtosResponse.data;
+    
+            // Filtering products that belong to the user's stores
+            const userLojasIds = new Set(lojasResponse.data.map(loja => loja.id));
+            const userProdutos = allProdutos.filter(produto => userLojasIds.has(produto.storeId));
+            setProdutos(userProdutos);
+    
+            // Filtering for promotional products
+            const produtosPromocionais = allProdutos.filter(produto => produto.promocional);
+            setProdutosPromocionais(produtosPromocionais);
+    
+        } catch (error) {
+            console.error("Erro ao buscar lojas ou produtos:", error);
+            swal.fire(
+                'Erro!',
+                'Houve um problema ao buscar lojas ou produtos.',
+                'error'
+            );
+        }
+    };
+    
     useEffect(() => {
-        const fetchLojas = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/stores');
-                setLojas(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar lojas:", error);
-            }
-        };
-
-        const fetchProdutos = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/products');
-                setProdutos(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar produtos:", error);
-            }
-        };
-
-        fetchLojas();
-        fetchProdutos();
-    }, []);
+        fetchLojasEProdutos();
+    }, [navigate]);
 
     const user = getData('user');
     console.log("Usuário atual:", user);
@@ -87,25 +121,62 @@ const AdminScreen = () => {
 
     const handleStoreSubmit = async (e) => {
         e.preventDefault();
+        const loggedInUser = getData('user'); 
+        const storeWithUserId = { ...store, userId: loggedInUser.id }; 
         try {
-            await axios.post('http://localhost:5000/stores', store);
-            alert("Loja cadastrada com sucesso!");  // Adicionando alerta de sucesso
-            navigate('/homepage');  // Redirecionando para a homepage
+            await axios.post('http://localhost:5000/stores', storeWithUserId);
+            // Altere para SweetAlert2
+            swal.fire(
+              'Sucesso!',
+              'Loja cadastrada com sucesso!',
+              'success'
+            );
+            navigate('/homepage');
         } catch (error) {
             console.error("Erro ao salvar loja:", error);
+            // Aqui também você pode usar o SweetAlert2 para mostrar o erro
+            swal.fire(
+              'Erro!',
+              'Não foi possível cadastrar a loja.',
+              'error'
+            );
         }
     };
+    
 
     const handleProductSubmit = async (e) => {
         e.preventDefault();
-        try {
-            await axios.post('http://localhost:5000/products', product);
-            alert("Produto cadastrado com sucesso!");  // Adicionando alerta de sucesso
-            navigate('/homepage');  // Redirecionando para a homepage
-        } catch (error) {
-            console.error("Erro ao salvar produto:", error);
+        const loggedInUser = getData('user'); // Supondo que isso retorne o usuário logado com sua loja.
+        const userStore = lojas.find(loja => loja.userId === loggedInUser.id); // Encontrar a loja do usuário
+    
+        // Verifica se encontrou uma loja para o usuário
+        if (userStore) {
+            const productWithStoreId = { ...product, storeId: userStore.id }; // Vincula o storeId ao produto
+            try {
+                await axios.post('http://localhost:5000/products', productWithStoreId);
+                swal.fire(
+                    'Sucesso!',
+                    'Produto cadastrado com sucesso!',
+                    'success'
+                );
+                navigate('/homepage');
+            } catch (error) {
+                console.error("Erro ao salvar produto:", error);
+                swal.fire(
+                    'Erro!',
+                    'Não foi possível cadastrar o produto.',
+                    'error'
+                );
+            }
+        } else {
+            swal.fire(
+                'Erro!',
+                'Loja não encontrada para o usuário logado.',
+                'error'
+            );
         }
     };
+    
 
 
     const handleEdit = (id) => {
@@ -128,12 +199,33 @@ const AdminScreen = () => {
     };
 
     const handleDeleteProduct = async (id) => {
-        if (window.confirm("Tem certeza que deseja excluir esse produto?")) {
+        // SweetAlert2 para confirmação
+        const result = await swal.fire({
+            title: 'Tem certeza?',
+            text: "Você não poderá reverter isso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir!'
+        });
+    
+        if (result.value) {
             try {
                 await axios.delete(`http://localhost:5000/products/${id}`);
                 setProdutos(prevProdutos => prevProdutos.filter(produto => produto.id !== id));
+                swal.fire(
+                    'Excluído!',
+                    'O produto foi excluído.',
+                    'success'
+                );
             } catch (error) {
                 console.error("Erro ao excluir produto:", error);
+                swal.fire(
+                    'Erro!',
+                    'Não foi possível excluir o produto.',
+                    'error'
+                );
             }
         }
     };
@@ -141,7 +233,7 @@ const AdminScreen = () => {
     return (
         <div className="admin-container">
             <div className="header">
-                Pevirt
+                Vitrine Virtual
             </div>
             <NavBar />
 
@@ -165,7 +257,16 @@ const AdminScreen = () => {
                 <form onSubmit={handleProductSubmit}>
                     <input type="text" name="nome" placeholder="Nome do Produto" value={product.nome} onChange={handleProductChange} />
                     <textarea name="descricao" placeholder="Descrição" value={product.descricao} onChange={handleProductChange}></textarea>
-                    <input type="text" name="preco" placeholder="Preço" value={product.preco} onChange={handleProductChange} />
+                    <input
+                        type="text"
+                        name="preco"
+                        placeholder="Preço"
+                        value={product.preco}
+                        onChange={e => {
+                            const maskedValue = maskPrice(e.target.value);
+                            handleProductChange({ target: { name: "preco", value: maskedValue } });
+                        }}
+                    />
                     <input type="file" accept="image/*" placeholder="Imagem do Produto" onChange={handleImageChange} ref={inputFileRef} />
                     <label>
                         <input type="checkbox" name="promocional" checked={product.promocional} onChange={e => setProduct({ ...product, promocional: e.target.checked })} /> Produto Promocional
@@ -173,13 +274,6 @@ const AdminScreen = () => {
                     <label>
                         <input type="checkbox" name="ativo" checked={product.ativo} onChange={e => setProduct({ ...product, ativo: e.target.checked })} /> Produto Ativo
                     </label>
-                    <h3>Vincular Loja</h3>
-                    <select name="storeId" value={product.storeId} onChange={handleProductChange}>
-                        <option value="">Selecione uma loja</option>
-                        {lojas.map(loja => (
-                            <option key={loja.id} value={loja.id}>{loja.nome}</option>
-                        ))}
-                    </select>
                     <button type="submit">Salvar Produto</button>
                 </form>
             </section>

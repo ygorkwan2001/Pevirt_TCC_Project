@@ -10,6 +10,7 @@ const EditLojaScreen = ({  }) => {
     const [nome, setNome] = useState('');
     const [endereco, setEndereco] = useState('');
 
+
     useEffect(() => {
         const fetchLoja = async () => {
             try {
