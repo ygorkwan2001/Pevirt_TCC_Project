@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getData } from '../config/storage';
 import NavBar from '../NavBar';
 import { useRef } from 'react';
 import Swal from 'sweetalert2';
@@ -10,6 +11,8 @@ import Swal from 'sweetalert2';
 const EditProductScreen = () => {
     const { id } = useParams(); // pegue o ID do produto da URL
     const navigate = useNavigate();
+    const user = getData('user');
+    const [storeName, setStoreName] = useState('Vitrine Virtual'); 
     const inputFileRef = useRef();
     const [product, setProduct] = useState({
         nome: '',
@@ -29,7 +32,25 @@ const EditProductScreen = () => {
     }
     
     
-    
+    useEffect(() => {
+        const fetchStoreName = async () => {
+            const user = getData('user');
+            if (user && user.tipo === 'Lojista') {
+                try {
+                    // Substitua a URL pelo endpoint correto do seu backend
+                    const response = await axios.get(`http://localhost:5000/stores?userId=${user.id}`);
+                    if (response.data && response.data.length > 0) {
+                        // Atualiza o nome da loja para o primeiro resultado obtido
+                        setStoreName(response.data[0].nome);
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar o nome da loja:', error);
+                }
+            }
+        };
+
+        fetchStoreName();
+    }, []);    
 
 
     // Função para buscar o produto quando a página for carregada
@@ -91,7 +112,7 @@ const EditProductScreen = () => {
     return (
         <div className="edit-product-container">
             <div className="header">
-                Pevirt
+                {storeName}
             </div>
             <NavBar />
             <h2>Editar Produto</h2>

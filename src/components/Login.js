@@ -57,7 +57,7 @@ const Login = ({setIsAuthenticated, setCurrentUser }) => {
           <Button type="submit" className="login-button">Entrar</Button>
           <Button variant="link" className="login-button register" onClick={() => navigate('/user')}>Criar novo usuário</Button>
 
-          <Button variant="secondary" className="mt-3 back-to-homepage" onClick={() => navigate('/homepage')}>Voltar para Homepage</Button>
+          <Button variant="secondary" className="mt-3 back-to-homepage" onClick={() =>  navigate('/homepage')}>Voltar para Homepage</Button>
 
         </Form>
       </Card.Body>

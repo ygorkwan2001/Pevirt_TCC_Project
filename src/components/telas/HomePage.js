@@ -13,6 +13,7 @@ const HomePage = ({ setIsAuthenticated, currentUser }) => {
     const user = getData('user');
     const navigate = useNavigate();
     const [produtosPromocionais, setProdutosPromocionais] = useState([]);
+    const [storeName, setStoreName] = useState('Vitrine Virtual');
 
     useEffect(() => {
         axios.get('http://localhost:5000/products')
@@ -33,6 +34,27 @@ const HomePage = ({ setIsAuthenticated, currentUser }) => {
             });
     }, []);
 
+
+    useEffect(() => {
+        const fetchStoreName = async () => {
+            const user = getData('user');
+            if (user && user.tipo === 'Lojista') {
+                try {
+                    // Substitua a URL pelo endpoint correto do seu backend
+                    const response = await axios.get(`http://localhost:5000/stores?userId=${user.id}`);
+                    if (response.data && response.data.length > 0) {
+                        // Atualiza o nome da loja para o primeiro resultado obtido
+                        setStoreName(response.data[0].nome);
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar o nome da loja:', error);
+                }
+            }
+        };
+
+        fetchStoreName();
+    }, []);
+
     const getStoreName = (storeId) => {
         const store = stores.find(store => Number(store.id) === Number(storeId));
         return store ? store.nome : 'Desconhecido';
@@ -46,7 +68,7 @@ const HomePage = ({ setIsAuthenticated, currentUser }) => {
     return (
         <div className="homepage-container">
             <div className="header">
-                Vitrine Virtual
+                {storeName}
             </div>
 
             <NavBar handleLogout={handleLogout} currentUser={currentUser} />

@@ -13,10 +13,12 @@ const AdminScreen = () => {
     const [produtos, setProdutos] = useState([]);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const initialStore = { nome: '', endereco: '' };
+    const [storeName, setStoreName] = useState('Vitrine Virtual'); // Novo estado para o nome da loja
     const [store, setStore] = useState(initialStore);
     const initialProduct = { nome: '', descricao: '', preco: '', imagem: '', promocional: false, ativo: true, storeId: '' };
     const [product, setProduct] = useState(initialProduct);
     const [produtosPromocionais, setProdutosPromocionais] = useState([]);
+    
 
 
     const maskPrice = (value) => {
@@ -28,7 +30,25 @@ const AdminScreen = () => {
     
     
 
+    useEffect(() => {
+        const fetchStoreName = async () => {
+            const user = getData('user');
+            if (user && user.tipo === 'Lojista') {
+                try {
+                    // Substitua a URL pelo endpoint correto do seu backend
+                    const response = await axios.get(`http://localhost:5000/stores?userId=${user.id}`);
+                    if (response.data && response.data.length > 0) {
+                        // Atualiza o nome da loja para o primeiro resultado obtido
+                        setStoreName(response.data[0].nome);
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar o nome da loja:', error);
+                }
+            }
+        };
 
+        fetchStoreName();
+    }, []);
 
     const inputFileRef = useRef();
 
@@ -66,7 +86,6 @@ const AdminScreen = () => {
             // Fetching the stores associated with the logged in user
             const lojasResponse = await axios.get(`http://localhost:5000/stores?userId=${loggedInUser.id}`);
             setLojas(lojasResponse.data);
-    
             // Fetching all the products
             const produtosResponse = await axios.get('http://localhost:5000/products');
             const allProdutos = produtosResponse.data;
@@ -131,6 +150,7 @@ const AdminScreen = () => {
               'Loja cadastrada com sucesso!',
               'success'
             );
+            setStoreName(store.nome); // Atualiza o estado com o nome da loja
             navigate('/homepage');
         } catch (error) {
             console.error("Erro ao salvar loja:", error);
@@ -233,7 +253,7 @@ const AdminScreen = () => {
     return (
         <div className="admin-container">
             <div className="header">
-                Vitrine Virtual
+                {storeName}
             </div>
             <NavBar />
 
